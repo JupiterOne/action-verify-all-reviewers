@@ -1,5 +1,5 @@
 {
-  "name": "all-approvers-merge",
+  "name": "action-verify-all-reviewers",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,15 +8,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electricgull/all-approvers-merge.git"
+    "url": "git+https://github.com/JupiterOne/action-verify-all-reviewers.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/electricgull/all-approvers-merge/issues"
+    "url": "https://github.com/JupiterOne/action-verify-all-reviewers/issues"
   },
-  "homepage": "https://github.com/electricgull/all-approvers-merge#readme",
+  "homepage": "https://github.com/JupiterOne/action-verify-all-reviewers#readme",
   "dependencies": {
     "@actions/core": "^1.6.0",
     "@actions/github": "^5.0.0"
