@@ -1,0 +1,28 @@
+name: Verify All Reviewers
+
+on:
+  pull_request_review:
+  pull_request:
+
+  workflow_dispatch:
+
+jobs:
+  approved:
+    name: Verify All Reviewers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.0.0
+
+      - name: Get PR
+        id: get_pr_number
+        run: echo "##[set-output name=pr_number;]$(echo ${{ github.event.pull_request.number }})"
+
+      - name: Verify Reviewers
+        id: verify_reviewers
+        uses: jupiterone/action-verify-all-reviewers@1.0.0
+        with:
+            auto_merge: true
+            owner: ${{ github.repository_owner }}
+            repo: ${{ github.event.repository.name }}
+            token: ${{ secrets.GITHUB_TOKEN }}
+            pr_number: ${{ steps.get_pr_number.outputs.pr_number }}

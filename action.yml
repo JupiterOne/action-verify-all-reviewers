@@ -1,0 +1,23 @@
+name: 'Verify All Reviewers'
+description: 'Verify that all reviewers have approved the merge request. If set, automerge the pull request'
+author: 'security@jupiterone.com'
+inputs:
+  auto_merge:
+    description: 'If all reviewers have approved then automerge the pull request'
+    required: true
+  owner:
+    description: 'The owner of the repository'
+    required: true
+  repo:
+    description: 'The name of the repository'
+    required: true
+  pr_number:
+    description: 'Get the current pull request number'
+    required: true
+  token:
+    description: 'The token to use to access the GitHub API'
+    required: true
+    default: ${{ github.token }}
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
