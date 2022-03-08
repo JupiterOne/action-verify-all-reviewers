@@ -1,6 +1,6 @@
 # GitHub Action: Verify All Reviewers 
 
-Currently, there is not an option within GitHub’s "Branch Protection Rules" to ensure that all reviewers have approved a pull request. As part of treating meetings as code, we require all attendees to sign off (approve) meeting notes. The approval will 1) confirm their presence at the meeting and 2) represent a blessing of the final meeting notes being submitted.   
+Currently, there is not an option within GitHub’s "Branch Protection Rules" to ensure that all reviewers have approved a pull request. This action is a mechanism for enforcing this review behavior, and optionally merging the PR automatically when all reviewers have approved.
 
 ## Development
 
