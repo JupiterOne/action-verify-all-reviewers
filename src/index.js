@@ -47,7 +47,7 @@ const main = async () => {
     //If there are reviewer approvals, grab all the users.login and put into array
     if (reviewComments.length > 0)
     {
-      var reviewedUserLogin = [];
+      const reviewedUserLogin = [];
       for(let i = 0; i < reviewComments.length; i++)
       {
         //check to see if the user is already in the array before pushing on stack
