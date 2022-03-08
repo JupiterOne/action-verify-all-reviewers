@@ -12,7 +12,7 @@ const main = async () => {
     const token = core.getInput('token', { required: true });
     const pullNumber = core.getInput('pr_number', { required: true });
     const octokit = github.getOctokit(token);
-    let mergeCheck = true; 
+    let shouldMerge = true; 
     //#endregion
 
 
@@ -27,11 +27,13 @@ const main = async () => {
     //Get a list of reviewers from the pr request
     const reviewers = pullRequest.requested_reviewers;
 
-    //Check to see if there are any reviewers left
+    //Check to see if reviewers have been added or any reviewers left to approve.
+    //Once reviewers have approved everything, there is a second API that needs to
+    //be called to check for an approval or just a comment.
     if (reviewers.length > 0)
     {
       core.setFailed(`${reviewers.length} reviewer(s) left to review.`);
-      mergeCheck = false;
+      shouldMerge = false;
     }  
     //#endregion Check reviewers 
 
@@ -48,21 +50,21 @@ const main = async () => {
     if (reviewComments.length > 0)
     {
       const reviewedUserLogin = [];
-      for(let i = 0; i < reviewComments.length; i++)
+      for (const reviewComment of reviewComments)
       {
         //check to see if the user is already in the array before pushing on stack
-        if(! reviewedUserLogin.includes(reviewComments[i].user.login) )
+        if(! reviewedUserLogin.includes(reviewComment.user.login) )
         {
           //Go through the json to see if the user has approved the pull.
           do 
           {
-            if(reviewComments[i].state === "APPROVED")
+            if(reviewComment.state === "APPROVED")
             {
-              reviewedUserLogin.push(reviewComments[i].user.login);
+              reviewedUserLogin.push(reviewComment.user.login);
             }
           }
           //Once the user has been found and added to the array, move on.
-          while(! reviewedUserLogin.includes(reviewComments[i].user.login) )  
+          while(! reviewedUserLogin.includes(reviewComment.user.login) )  
         }
       }
 
@@ -96,7 +98,7 @@ const main = async () => {
       else
       {
         core.setFailed(`No approvals found.`);
-        mergeCheck = false;
+        shouldMerge = false;
       }
       
     }
@@ -104,12 +106,12 @@ const main = async () => {
     else
     {
       core.setFailed(`No reviewers found.`);
-      mergeCheck = false;
+      shouldMerge = false;
     }
     //#endregion
 
     //#region Check if automerge is turned on and if mergeCheck is still true
-    if(mergeCheck && autoMerge)
+    if(shouldMerge && autoMerge)
     {
 
       //Merge branch
