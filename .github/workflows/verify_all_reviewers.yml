@@ -19,7 +19,7 @@ jobs:
 
       - name: Verify Reviewers
         id: verify_reviewers
-        uses: jupiterone/action-verify-all-reviewers@1.0.0
+        uses: jupiterone/action-verify-all-reviewers@v1.0.0
         with:
             auto_merge: true
             owner: ${{ github.repository_owner }}
