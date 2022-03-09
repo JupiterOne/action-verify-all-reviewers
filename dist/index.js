@@ -8604,9 +8604,11 @@ const main = async () => {
                                   run_id : job.run_id,
                                 })).data;
 
+            
             //Find the failed pull_request event and rerun it
             if(actions_run.event === "pull_request")
             {
+              core.info(`Starting rerun post request`);
               await octokit.request('POST /repos/{owner}/{repo}/actions/runs/{run_id}/rerun',
                                     {
                                       owner: owner,
