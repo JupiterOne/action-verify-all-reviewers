@@ -8586,9 +8586,11 @@ const main = async () => {
             ref: pullCommitsSHA
           })).data.check_runs;
 
+          core.info(`traversing check_runs`);
           for (var check_run of check_runs) {
             if(check_run.app.slug == 'github-actions')
             {
+              core.info(`found github-actions`);
               //Get the check run id
               const job = (await octokit.rest.actions.getJobForWorkflowRun({
                             owner: owner,
@@ -8604,7 +8606,7 @@ const main = async () => {
                                   run_id : job.run_id,
                                 })).data;
 
-            
+            core.info(`checking for pull_request`);
             //Find the failed pull_request event and rerun it
             if(actions_run.event === "pull_request")
             {
