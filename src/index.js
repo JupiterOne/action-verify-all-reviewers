@@ -27,16 +27,6 @@ const main = async () => {
     //Get a list of reviewers from the pr request
     const reviewers = pullRequest.requested_reviewers;
 
-    //Grab the latest commit for the sha
-    const { data: pullCommits } = await octokit.rest.pulls.listCommits({
-                                    owner: owner,
-                                    repo: repo,
-                                    pull_number: pullNumber
-                                  });
-
-    const pullCommitsSHA = pullCommits[0].sha
-    core.info(`Sha: ${pullCommitsSHA}`);
-
     //Check to see if reviewers have been added or any reviewers left to approve.
     //Once reviewers have approved everything, there is a second API that needs to
     //be called to check for an approval or just a comment.
@@ -105,52 +95,7 @@ const main = async () => {
         core.info(`Current Approver(s): ${reviewedUsers.toString()}`);
 
 
-        //#region Rerun any failed pull_request checks. These might happen during initial creation.
-
-        core.info(`Rerunning pull_request verification`);
-
-        //get a list of check runs
-        const check_runs = (await octokit.rest.checks.listForRef({
-            owner: owner,
-            repo: repo,
-            ref: pullCommitsSHA
-          })).data.check_runs;
-
-          core.info(`traversing check_runs: ${check_runs[0]}`);
-          for (var check_run of check_runs) {
-            if(check_run.app.slug == 'github-actions')
-            {
-              core.info(`found github-actions`);
-              //Get the check run id
-              const job = (await octokit.rest.actions.getJobForWorkflowRun({
-                            owner: owner,
-                            repo: repo,
-                            job_id : check_run.id,
-                          })).data;
-            }
-
-            // Get the actions run from the job
-            const actions_run = (await octokit.rest.actions.getWorkflowRun({
-                                  owner: owner,
-                                  repo: repo,
-                                  run_id : job.run_id,
-                                })).data;
-
-            core.info(`checking for pull_request`);
-            //Find the failed pull_request event and rerun it
-            if(actions_run.event === "pull_request")
-            {
-              core.info(`Starting rerun post request`);
-              await octokit.request('POST /repos/{owner}/{repo}/actions/runs/{run_id}/rerun',
-                                    {
-                                      owner: owner,
-                                      repo: repo,
-                                      run_id: actions_run.id
-                                    });
-            }
-
-          }
-        //#endregion
+        
 
       }
       else
@@ -168,7 +113,61 @@ const main = async () => {
     }
     //#endregion
 
-   
+    //#region Rerun any failed pull_request checks. These might happen during initial creation.
+
+            //Grab the latest commit for the sha
+            const { data: pullCommits } = await octokit.rest.pulls.listCommits({
+              owner: owner,
+              repo: repo,
+              pull_number: pullNumber
+            });
+
+    const pullCommitsSHA = pullCommits[pullCommits.length -1].sha
+    core.info(`Sha: ${pullCommitsSHA}`);
+
+    core.info(`Rerunning pull_request verification`);
+
+    //get a list of check runs
+    const check_runs = (await octokit.rest.checks.listForRef({
+    owner: owner,
+    repo: repo,
+    ref: pullCommitsSHA
+    })).data.check_runs;
+
+    core.info(`traversing check_runs: ${check_runs[0]}`);
+    for (var check_run of check_runs) {
+      if(check_run.app.slug == 'github-actions')
+      {
+      core.info(`found github-actions`);
+      //Get the check run id
+      const job = (await octokit.rest.actions.getJobForWorkflowRun({
+      owner: owner,
+      repo: repo,
+      job_id : check_run.id,
+      })).data;
+      }
+
+      // Get the actions run from the job
+      const actions_run = (await octokit.rest.actions.getWorkflowRun({
+          owner: owner,
+          repo: repo,
+          run_id : job.run_id,
+        })).data;
+
+      core.info(`checking for pull_request`);
+      //Find the failed pull_request event and rerun it
+      if(actions_run.event === "pull_request")
+      {
+      core.info(`Starting rerun post request`);
+      await octokit.request('POST /repos/{owner}/{repo}/actions/runs/{run_id}/rerun',
+            {
+              owner: owner,
+              repo: repo,
+              run_id: actions_run.id
+            });
+      }
+    }
+    //#endregion
   }
   catch (error) {
     core.setFailed(error.message);
