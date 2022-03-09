@@ -116,7 +116,7 @@ const main = async () => {
             ref: pullCommitsSHA
           })).data.check_runs;
 
-          core.info(`traversing check_runs`);
+          core.info(`traversing check_runs: ${check_runs[0]}`);
           for (var check_run of check_runs) {
             if(check_run.app.slug == 'github-actions')
             {
