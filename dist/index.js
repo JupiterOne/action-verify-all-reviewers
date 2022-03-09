@@ -8575,11 +8575,12 @@ const main = async () => {
           pull_number: pullNumber
         });
 
+        core.info(`Sha: ${pullCommits.sha}`);
         //get a list of check runs
         const check_runs = (await octokit.rest.checks.listForRef({
             owner: owner,
             repo: repo,
-            ref: pullCommits[0].sha
+            ref: pullCommits.sha
           })).data.check_runs;
 
           for (var check_run of check_runs) {
@@ -8607,7 +8608,7 @@ const main = async () => {
                                     {
                                       owner: owner,
                                       repo: repo,
-                                        run_id: actions_run.id
+                                      run_id: actions_run.id
                                     });
             }
 
