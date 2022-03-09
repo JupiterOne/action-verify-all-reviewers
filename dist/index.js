@@ -8497,6 +8497,16 @@ const main = async () => {
     //Get a list of reviewers from the pr request
     const reviewers = pullRequest.requested_reviewers;
 
+    //Grab the latest commit for the sha
+    const { data: pullCommits } = await octokit.rest.pulls.listCommits({
+                                    owner: owner,
+                                    repo: repo,
+                                    pull_number: pullNumber
+                                  });
+
+    const pullCommitsSHA = pullCommits[0].sha
+    core.info(`Sha: ${pullCommitsSHA}`);
+
     //Check to see if reviewers have been added or any reviewers left to approve.
     //Once reviewers have approved everything, there is a second API that needs to
     //be called to check for an approval or just a comment.
@@ -8568,19 +8578,12 @@ const main = async () => {
         //#region Rerun any failed pull_request checks. These might happen during initial creation.
 
         core.info(`Rerunning pull_request verification`);
-        //Grab the latest commit for the sha
-        const { data: pullCommits } = await octokit.rest.pulls.listCommits({
-          owner: owner,
-          repo: repo,
-          pull_number: pullNumber
-        });
 
-        core.info(`Sha: ${pullCommits.sha}`);
         //get a list of check runs
         const check_runs = (await octokit.rest.checks.listForRef({
             owner: owner,
             repo: repo,
-            ref: pullCommits.sha
+            ref: pullCommitsSHA
           })).data.check_runs;
 
           for (var check_run of check_runs) {
