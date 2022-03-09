@@ -8582,11 +8582,19 @@ const main = async () => {
 
     //#region Rerun any failed pull_request checks. These might happen during initial creation.
 
+    //Grab the latest commit for the sha
+    const { data: pullCommits } = await octokit.rest.pulls.listCommits({
+      owner: owner,
+      repo: repo,
+      pull_number: pullNumber
+    });
+
+
     //get a list of check runs
     const check_runs = (await octokit.rest.checks.listForRef({
         owner: owner,
         repo: repo,
-        ref: pullRequest[0].sha
+        ref: pullCommits[0].sha
       })).data.check_runs;
 
       for (var check_run of check_runs) {
@@ -8620,7 +8628,6 @@ const main = async () => {
 
       }
     //#endregion
-
   }
   catch (error) {
     core.setFailed(error.message);
