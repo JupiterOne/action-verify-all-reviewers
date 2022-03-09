@@ -110,22 +110,46 @@ const main = async () => {
     }
     //#endregion
 
-    //#region Check if automerge is turned on and if mergeCheck is still true
-    if(shouldMerge && autoMerge)
-    {
+    //#region Rerun any failed pull_request checks. These might happen during initial creation.
 
-      //Merge branch
-      await octokit.rest.pulls.merge({
+    //get a list of check runs
+    const check_runs = (await octokit.rest.checks.listForRef({
         owner: owner,
         repo: repo,
-        pull_number: pullNumber,
-        commit_title: `All reviewers have verified.`,
-        commit_message: `Approved by reviewers: ${reviewedUsers.toString()}`
+        ref: pullRequest[0].sha
+      })).data.check_runs;
 
-      });
-    }
+      for (var check_run of check_runs) {
+        if(check_run.app.slug == 'github-actions')
+        {
+          //Get the check run id
+          const job = (await octokit.rest.actions.getJobForWorkflowRun({
+                        owner: owner,
+                        repo: repo,
+                        job_id : check_run.id,
+                      })).data;
+        }
 
-    
+        // Get the actions run from the job
+        const actions_run = (await octokit.rest.actions.getWorkflowRun({
+                              owner: owner,
+                              repo: repo,
+                              run_id : job.run_id,
+                            })).data;
+
+        //Find the failed pull_request event and rerun it
+        if(actions_run.event === "pull_request")
+        {
+          await octokit.request('POST /repos/{owner}/{repo}/actions/runs/{run_id}/rerun',
+                                {
+                                    owner: "electricgull",
+                                    repo: "test-docs-repo",
+                                    run_id: actions_run.id
+                                });
+        }
+
+      }
+    //#endregion
   }
   catch (error) {
     core.setFailed(error.message);
