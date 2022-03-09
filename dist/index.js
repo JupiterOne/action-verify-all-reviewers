@@ -8582,13 +8582,14 @@ const main = async () => {
 
     //#region Rerun any failed pull_request checks. These might happen during initial creation.
 
+
+    core.info(`Rerunning pull_request verification`);
     //Grab the latest commit for the sha
     const { data: pullCommits } = await octokit.rest.pulls.listCommits({
       owner: owner,
       repo: repo,
       pull_number: pullNumber
     });
-
 
     //get a list of check runs
     const check_runs = (await octokit.rest.checks.listForRef({
@@ -8620,8 +8621,8 @@ const main = async () => {
         {
           await octokit.request('POST /repos/{owner}/{repo}/actions/runs/{run_id}/rerun',
                                 {
-                                    owner: "electricgull",
-                                    repo: "test-docs-repo",
+                                  owner: owner,
+                                  repo: repo,
                                     run_id: actions_run.id
                                 });
         }
