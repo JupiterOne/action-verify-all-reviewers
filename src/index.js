@@ -136,12 +136,12 @@ const main = async () => {
             if(actions_run.event === "pull_request")
             {
               core.info(`Starting rerun post request`);
-              await octokit.request('POST /repos/{owner}/{repo}/actions/runs/{run_id}/rerun',
-                                    {
-                                      owner: owner,
-                                      repo: repo,
-                                      run_id: actions_run.id
-                                    });
+              octokit.request('POST /repos/{owner}/{repo}/actions/runs/{run_id}/rerun',
+                                  {
+                                    owner: owner,
+                                    repo: repo,
+                                    run_id: actions_run.id
+                                  });
             }
           }
         }
