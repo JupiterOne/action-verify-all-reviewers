@@ -94,6 +94,7 @@ const main = async () => {
                   
         core.info(`Current Approver(s): ${reviewedUsers.toString()}`);
 
+        
         //#region Rerun any failed pull_request checks. These might happen during initial creation.
 
         //Grab the latest commit for the sha
@@ -103,8 +104,8 @@ const main = async () => {
           pull_number: pullNumber
         });
 
-
         const pullCommitsSHA = pullCommits[pullCommits.length -1].sha
+        
         core.info(`Rerunning pull_request verification`);
 
         //get a list of check runs
