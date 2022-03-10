@@ -8485,9 +8485,7 @@ const main = async () => {
     let shouldMerge = true; 
     //#endregion
 
-    //Check for pull_request_review events
-    if(eventName === "pull_request_review")
-    {
+
       //Get the current pr request
       const { data: pullRequest } = await octokit.rest.pulls.get({
           owner: owner,
@@ -8577,11 +8575,10 @@ const main = async () => {
         core.setFailed(`No reviewers found.`);
         shouldMerge = false;
       }
-    } 
     //End of pull_request_reviews check
 
-    //Check pull_request
-    if (eventName === "pull_request")
+    //Rerun pull_request only if pull_request_review was called
+    if (eventName === "pull_request_review")
     {
       //Grab the latest commit for the sha
       const { data: pullCommits } = await octokit.rest.pulls.listCommits({
@@ -8622,7 +8619,7 @@ const main = async () => {
           if(actions_run.event === "pull_request")
           {
             core.info(`Starting rerun post request`);
-            octokit.request('POST /repos/{owner}/{repo}/actions/runs/{run_id}/rerun',
+            await octokit.request('POST /repos/{owner}/{repo}/actions/runs/{run_id}/rerun',
                                 {
                                   owner: owner,
                                   repo: repo,
