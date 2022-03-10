@@ -20,7 +20,7 @@ jobs:
         id: check_reviewers
         uses: jupiterone/action-verify-all-reviewers@v1
         with:
-            pull_check: true
+            event_name: ${{ github.event_name }}
             owner: ${{ github.repository_owner }}
             repo: ${{ github.event.repository.name }}
             token: ${{ secrets.GITHUB_TOKEN }}
