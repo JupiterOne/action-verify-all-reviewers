@@ -2,18 +2,18 @@
   "name": "action-verify-all-reviewers",
   "version": "1.0.0",
   "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JupiterOne/action-verify-all-reviewers"
+  },
+  "license": "ISC",
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "ncc build src/index.js -o dist"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/JupiterOne/action-verify-all-reviewers.git"
-  },
   "keywords": [],
   "author": "",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/JupiterOne/action-verify-all-reviewers/issues"
   },

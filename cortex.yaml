@@ -1,0 +1,12 @@
+openapi: 3.0.1
+info:
+  title: action-verify-all-reviewers
+  description: ''
+  x-cortex-git:
+    github:
+      repository: JupiterOne/action-verify-all-reviewers
+  x-cortex-owners:
+    - type: group
+      name: JupiterOne/security
+  x-cortex-service-groups: tier-4
+  x-cortex-tag: action-verify-all-reviewers
